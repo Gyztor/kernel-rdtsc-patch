@@ -29,7 +29,8 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu) \
 		{ \
 			u64 diff = rdtsc_real - rdtsc_prev; \
 			u64 fake_diff =  diff / 20; // if you have 3.2Ghz on your vm, change 20 to 16 \
-		rdtsc_fake += fake_diff; \
+			rdtsc_fake += fake_diff; \
+		} \
 	} \
 	if(rdtsc_fake > rdtsc_real) \
 	{ \
