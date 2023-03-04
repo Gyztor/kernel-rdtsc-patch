@@ -9,25 +9,21 @@ chmod +x patch.sh
 ```
 
 ## Tick manipulation
-For Intel users:
+Intel CPUs:
 
-* Open vmx.c in text editor
-* Find handle_rdtsc function
-* Change **u64 fake_diff =  diff / 16;**
-* 16 is a divider of actual difference in timestamp, you can increase and decrease it
+* nano -l +6004 **arch/x86/kvm/vmx/vmx.c**
+* u64 fake_diff =  diff / ***16***; <<< The bold int is the value you divide by.
 
-For AMD users:
+AMD CPUs:
 
-* Open svm.c in text editor
-* Find handle_rdtsc_interception function
-* Change **u64 fake_diff =  diff / 20;**
-* 20 is a divider of actual difference in timestamp, you can increase and decrease it 
+* nano -l +3151 **arch/x86/kvm/svm/svm.c**
+* u64 fake_diff =  diff / ***20***; <<< The bold int is the value you divide by.
 
 ## Kernel Compile / Installation
 You'll need to follow your distros compiling guide.
 
 ## After installation
-enable qemu:commandline in your libvirt xml
+enable qemu:commandline in your libvirt xml then add:
 
 ```
 <qemu:arg value="-cpu"/>
