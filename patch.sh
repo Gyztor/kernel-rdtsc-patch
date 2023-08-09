@@ -50,7 +50,7 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu)\n\
 	svm_set_intercept(svm, INTERCEPT_RDTSC);" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
   line_3=$(( $(grep -n "SVM_EXIT_VMGEXIT" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+0))
   sed -i "${line_3}a\
-	[SVM_EXIT_RDTSC]                        = handle_rdtsc_interception," "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
+	[SVM_EXIT_RDTSC]			= handle_rdtsc_interception" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 elif [ $cpu_brand = "GenuineIntel" ] && [ -z $(grep -r "EDITED BY SED" "$(pwd)linux/arch/x86/kvm/vmx/vmx.c") ]; then
 
   sed -i '5984a\
