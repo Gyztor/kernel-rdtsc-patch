@@ -6,7 +6,7 @@ cpu_brand=$(grep -m 1 'vendor_id' /proc/cpuinfo | cut -c13-)
 
 git clone --branch $linux_git_branch $linux_git_repo
 
-if [[ $cpu_brand == "AuthenticAMD" ]] && [[ -z $(grep -r "EDITED BY SED" "$(pwd)/linux/arch/x86/kvm/svm/svm.c") ]]; then
+if [ $cpu_brand = "AuthenticAMD" ] && [ -z $(grep -r "EDITED BY SED" "$(pwd)/linux/arch/x86/kvm/svm/svm.c") ]; then
   line_1=$(( $(grep -n "kvm_handle_invpcid(vcpu, type, gva);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+2))
   sed -i '$line_1a\
 \
@@ -51,7 +51,7 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu) \
   line_3=$(( $(grep -n "SVM_EXIT_VMGEXIT" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
   sed -i '$line_3a\
 	[SVM_EXIT_RDTSC]			= handle_rdtsc_interception,' "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
-elif [[ $cpu_brand == "GenuineIntel" ]] && [[ -z $(grep -r "EDITED BY SED" "$(pwd)linux/arch/x86/kvm/vmx/vmx.c") ]]; then
+elif [ $cpu_brand = "GenuineIntel" ] && [ -z $(grep -r "EDITED BY SED" "$(pwd)linux/arch/x86/kvm/vmx/vmx.c") ]; then
 
   sed -i '5984a\
 \
