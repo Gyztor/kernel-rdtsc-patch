@@ -7,7 +7,8 @@ cpu_brand=$(grep -m 1 'vendor_id' /proc/cpuinfo | cut -c13-)
 git clone --branch $linux_git_branch $linux_git_repo
 
 if [[ $cpu_brand == "AuthenticAMD" ]] && [[ -z $(grep -r "EDITED BY SED" "$(pwd)/linux/arch/x86/kvm/svm/svm.c") ]]; then
-  sed -i '3129a\
+  line_1=$(( $(grep -n "kvm_handle_invpcid(vcpu, type, gva);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+2))
+  sed -i '$line_1a\
 \
 /* EDITED BY SED */ \
 u32 print_once = 1; \
@@ -44,9 +45,11 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu) \
 	return svm_skip_emulated_instruction(vcpu); \
 }' "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 
-  sed -i '1230a\
+  line_2=$(( $(grep -n "svm_set_intercept(svm, INTERCEPT_RSM);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
+  sed -i '$line_2a\
 	svm_set_intercept(svm, INTERCEPT_RDTSC);' "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
-  sed -i '3238a\
+  line_3=$(( $(grep -n "SVM_EXIT_VMGEXIT" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
+  sed -i '$line_3a\
 	[SVM_EXIT_RDTSC]			= handle_rdtsc_interception,' "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 elif [[ $cpu_brand == "GenuineIntel" ]] && [[ -z $(grep -r "EDITED BY SED" "$(pwd)linux/arch/x86/kvm/vmx/vmx.c") ]]; then
 
