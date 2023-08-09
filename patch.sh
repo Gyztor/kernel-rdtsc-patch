@@ -1,7 +1,7 @@
 #!/bin/bash
 
-linux_git_repo="https://github.com/torvalds/linux"
-linux_git_branch="v6.2"
+linux_git_repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+linux_git_branch="linux-rolling-lts"
 cpu_brand=$(grep -m 1 'vendor_id' /proc/cpuinfo | cut -c13-)
 
 git clone --branch $linux_git_branch $linux_git_repo
