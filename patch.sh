@@ -19,7 +19,7 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu)\n\
 	u64 rdtsc_real = rdtsc();\n\
 	if(print_once)\n\
 	{\n\
-		printk(\"[handle_rdtsc] fake rdtsc svm function is working\n\");\n\
+		printk(\"[handle_rdtsc] fake rdtsc svm function is working\\n\");\n\
 		print_once = 0;\n\
 		rdtsc_fake = rdtsc_real;\n\
 	}\n\
@@ -45,12 +45,12 @@ static int handle_rdtsc_interception(struct kvm_vcpu *vcpu)\n\
 	return svm_skip_emulated_instruction(vcpu);\n\
 }" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 
-  line_2=$(( $(grep -n "svm_set_intercept(svm, INTERCEPT_RSM);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
+  line_2=$(( $(grep -n "svm_set_intercept(svm, INTERCEPT_RSM);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+0))
   sed -i "${line_2}a\
-        svm_set_intercept(svm, INTERCEPT_RDTSC);" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
-  line_3=$(( $(grep -n "SVM_EXIT_VMGEXIT" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
+	svm_set_intercept(svm, INTERCEPT_RDTSC);" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
+  line_3=$(( $(grep -n "SVM_EXIT_VMGEXIT" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+0))
   sed -i "${line_3}a\
-        [SVM_EXIT_RDTSC]                        = handle_rdtsc_interception," "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
+	[SVM_EXIT_RDTSC]                        = handle_rdtsc_interception," "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 elif [ $cpu_brand = "GenuineIntel" ] && [ -z $(grep -r "EDITED BY SED" "$(pwd)linux/arch/x86/kvm/vmx/vmx.c") ]; then
 
   sed -i '5984a\
