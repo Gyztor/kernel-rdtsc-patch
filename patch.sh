@@ -10,39 +10,39 @@ if [ $cpu_brand = "AuthenticAMD" ] && [ -z $(grep -r "EDITED BY SED" "$(pwd)/lin
   line_1=$(( $(grep -n "kvm_handle_invpcid(vcpu, type, gva);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+2))
   sed -i "${line_1}a\
 \
-/* EDITED BY SED */\n \
-u32 print_once = 1;\n \
-static int handle_rdtsc_interception(struct kvm_vcpu *vcpu)\n \
-{\n \
-	static u64 rdtsc_fake = 0;\n \
-        static u64 rdtsc_prev = 0;\n \
-        u64 rdtsc_real = rdtsc();\n \
-        if(print_once)\n \
-        {\n \
-                printk('[handle_rdtsc] fake rdtsc svm function is working\n');\n \
-                print_once = 0;\n \
-                rdtsc_fake = rdtsc_real;\\n \
-        }\n \
+/* EDITED BY SED */\n\
+u32 print_once = 1;\n\
+static int handle_rdtsc_interception(struct kvm_vcpu *vcpu)\n\
+{\n\
+	static u64 rdtsc_fake = 0;\n\
+	static u64 rdtsc_prev = 0;\n\
+	u64 rdtsc_real = rdtsc();\n\
+	if(print_once)\n\
+	{\n\
+		printk(\"[handle_rdtsc] fake rdtsc svm function is working\n\");\n\
+		print_once = 0;\n\
+		rdtsc_fake = rdtsc_real;\n\
+	}\n\
 \n\
-        if(rdtsc_prev != 0)\n \
-        {\n \
-                if(rdtsc_real > rdtsc_prev)\n \
-                {\n \
-                        u64 diff = rdtsc_real - rdtsc_prev;\n \
-                        u64 fake_diff =  diff / 20; // if you have 3.2Ghz on your vm, change 20 to 16\n \
-                        rdtsc_fake += fake_diff;\n \
-                }\n \
-        }\n \
-        if(rdtsc_fake > rdtsc_real)\n \
-        {\n \
-                rdtsc_fake = rdtsc_real;\n \
-        }\n \
-        rdtsc_prev = rdtsc_real;\n \
+	if(rdtsc_prev != 0)\n\
+	{\n\
+		if(rdtsc_real > rdtsc_prev)\n\
+		{\n\
+			u64 diff = rdtsc_real - rdtsc_prev;\n\
+			u64 fake_diff =  diff / 20; // if you have 3.2Ghz on your vm, change 20 to 16\n\
+			rdtsc_fake += fake_diff;\n\
+		}\n\
+	}\n\
+	if(rdtsc_fake > rdtsc_real)\n\
+	{\n\
+		rdtsc_fake = rdtsc_real;\n\
+	}\n\
+	rdtsc_prev = rdtsc_real;\n\
 \n\
-        vcpu->arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1u;\n \
-        vcpu->arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1u;\n \
+	vcpu->arch.regs[VCPU_REGS_RAX] = rdtsc_fake & -1u;\n\
+	vcpu->arch.regs[VCPU_REGS_RDX] = (rdtsc_fake >> 32) & -1u;\n\
 \n\
-        return svm_skip_emulated_instruction(vcpu);\n \
+	return svm_skip_emulated_instruction(vcpu);\n\
 }" "$(pwd)/linux/arch/x86/kvm/svm/svm.c"
 
   line_2=$(( $(grep -n "svm_set_intercept(svm, INTERCEPT_RSM);" linux/arch/x86/kvm/svm/svm.c | awk '{print $1;}' | cut -f1 -d ':')+1))
